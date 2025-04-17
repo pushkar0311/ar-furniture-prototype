@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AR Furniture Viewer</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.0/dist/aframe-extras.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        #loading {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+        #error {
+            display: none;
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            background: #ff4444;
+            color: white;
+            padding: 10px;
+            z-index: 1000;
+        }
+        #back-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            padding: 10px 20px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 16px;
+        }
+        .control-panel {
+            position: absolute;
+            right: 20px;
+            bottom: 80px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .rotation-controls {
+            position: absolute;
+            left: 20px;
+            bottom: 80px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">Initializing AR...</div>
+    <div id="error"></div>
+    <button id="back-btn">Back to Products</button>
+    
+    <div class="control-panel">
+        <button class="control-btn" id="zoom-in">+</button>
+        <button class="control-btn" id="zoom-out">-</button>
+    </div>
+    
+    <div class="rotation-controls">
+        <button class="control-btn" id="rotate-left">↶</button>
+        <button class="control-btn" id="rotate-right">↷</button>
+        <button class="control-btn" id="toggle-rotation">⥁</button>
+    </div>
+    
+    <a-scene 
+        vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: false"
+        arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+        renderer="logarithmicDepthBuffer: true; antialias: true"
+        loading-screen="enabled: false">
+        
+        <a-assets>
+            <a-asset-item id="model" src=""></a-asset-item>
+        </a-assets>
+        
+        <a-entity
+            id="ar-model"
+            gltf-model="#model"
+            scale="0.5 0.5 0.5"
+            position="0 0 -1.5"
+            rotation="0 180 0"
+            animation="property: rotation; to: 0 540 0; loop: true; dur: 10000; startEvents: start-rotation; pauseEvents: pause-rotation"
+            ar-hit-test="target: #model">
+        </a-entity>
+        
+        <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const modelUrl = localStorage.getItem('arModelUrl');
+            if (!modelUrl) {
+                showErrorAndRedirect('No product selected');
+                return;
+            }
+
+            // Load the model
+            document.getElementById('model').setAttribute('src', modelUrl);
+            
+            const arModel = document.getElementById('ar-model');
+            let currentScale = 0.5;
+            let isRotating = true;
+            
+            arModel.addEventListener('model-loaded', function() {
+                document.getElementById('loading').style.display = 'none';
+                
+                // Adjust scale based on model type
+                const modelName = modelUrl.toLowerCase();
+                if (modelName.includes('bed') || modelName.includes('sofa')) {
+                    currentScale = 0.8;
+                } else if (modelName.includes('lantern')) {
+                    currentScale = 0.3;
+                }
+                
+                arModel.setAttribute('scale', `${currentScale} ${currentScale} ${currentScale}`);
+                
+                // Auto-start rotation
+                arModel.emit('start-rotation');
+                
+                // Show controls after slight delay
+                setTimeout(() => {
+                    document.querySelectorAll('.control-btn, .control-panel, .rotation-controls')
+                        .forEach(el => el.style.display = 'flex');
+                }, 500);
+            });
+
+            arModel.addEventListener('model-error', function() {
+                showErrorAndRedirect('Failed to load 3D model');
+            });
+
+            // Zoom controls
+            document.getElementById('zoom-in').addEventListener('click', function() {
+                currentScale = Math.min(currentScale + 0.1, 2.0);
+                arModel.setAttribute('scale', `${currentScale} ${currentScale} ${currentScale}`);
+            });
+            
+            document.getElementById('zoom-out').addEventListener('click', function() {
+                currentScale = Math.max(currentScale - 0.1, 0.1);
+                arModel.setAttribute('scale', `${currentScale} ${currentScale} ${currentScale}`);
+            });
+            
+            // Rotation controls
+            document.getElementById('rotate-left').addEventListener('click', function() {
+                const rotation = arModel.getAttribute('rotation');
+                arModel.setAttribute('rotation', {y: rotation.y + 45});
+            });
+            
+            document.getElementById('rotate-right').addEventListener('click', function() {
+                const rotation = arModel.getAttribute('rotation');
+                arModel.setAttribute('rotation', {y: rotation.y - 45});
+            });
+            
+            // Toggle auto-rotation
+            document.getElementById('toggle-rotation').addEventListener('click', function() {
+                isRotating = !isRotating;
+                if (isRotating) {
+                    arModel.emit('start-rotation');
+                    this.textContent = '⥁';
+                } else {
+                    arModel.emit('pause-rotation');
+                    this.textContent = '▶';
+                }
+            });
+
+            function showErrorAndRedirect(message) {
+                document.getElementById('error').textContent = message;
+                document.getElementById('error').style.display = 'block';
+                setTimeout(() => window.location.href = 'products.html', 2000);
+            }
+
+            document.getElementById('back-btn').addEventListener('click', function() {
+                window.location.href = 'products.html';
+            });
+        });
+    </script>
+</body>
+</html>

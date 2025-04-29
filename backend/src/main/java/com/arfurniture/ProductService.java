@@ -1,7 +1,7 @@
 package com.arfurniture;
 
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -26,7 +26,6 @@ public class ProductService {
                 return;
             }
 
-            // Serve only your local models with relative paths
             String productsJson = "["
                 + "{\"id\":1,\"name\":\"Modern Bed\",\"price\":599.99,\"arModelUrl\":\"models/bed.glb\"},"
                 + "{\"id\":2,\"name\":\"Corner Sofa\",\"price\":899.99,\"arModelUrl\":\"models/corner_sofa.glb\"},"
@@ -48,7 +47,7 @@ public class ProductService {
     }
 
     private void setCorsHeaders(HttpExchange exchange) {
-        exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*"); // Changed to * for mobile testing
+        exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
         exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, OPTIONS");
         exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Authorization, Content-Type");
         exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");

@@ -11,6 +11,7 @@ public class Main {
         server.createContext("/api/login", new AuthService()::handleLogin);
         server.createContext("/api/register", new AuthService()::handleRegister);
         server.createContext("/api/products", new ProductService()::handleProducts);
+        server.createContext("/api/wishlist", new WishlistService()::handleWishlist);
         
         server.createContext("/", exchange -> {
             String response = "AR Furniture Prototype API";

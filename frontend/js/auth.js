@@ -1,4 +1,3 @@
-// File: /frontend/js/auth.js
 document.addEventListener('DOMContentLoaded', function() {
     const TOKEN_KEY = 'arFurnitureToken';
     const MODEL_URL_KEY = 'arModelUrl';

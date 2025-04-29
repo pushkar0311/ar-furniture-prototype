@@ -5,8 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - AR Furniture</title>
     <link rel="stylesheet" href="css/auth.css">
+    <style>
+        /* Added header styles for consistency */
+        header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 10px 20px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        header nav {
+            display: flex;
+            gap: 15px;
+        }
+        header a {
+            color: white;
+            text-decoration: none;
+        }
+        body {
+            padding-top: 60px;
+        }
+    </style>
 </head>
 <body>
+    <header>
+        <h1>AR Furniture</h1>
+        <nav>
+            <a href="products.html">Products</a>
+            <a href="wishlist.html">Wishlist</a>
+        </nav>
+    </header>
+
     <div class="auth-container">
         <h1>Login</h1>
         <form id="login-form">
@@ -24,7 +63,7 @@
         <div id="login-message" class="message"></div>
     </div>
     <script>
-        const API_URL = "http://192.168.116.227:8000"; // Add this before auth.js loads
+        const API_URL = "http://192.168.116.227:8000";
     </script>
     <script src="js/auth.js"></script>
 </body>

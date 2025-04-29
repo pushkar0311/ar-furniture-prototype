@@ -5,12 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Products - AR Furniture</title>
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Consistent header styling */
+        header {
+            position: sticky;
+            top: 0;
+            padding: 10px 20px;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        header nav {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        header a {
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+        header button {
+            background: none;
+            border: 1px solid white;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        header button:hover {
+            background: rgba(255,255,255,0.1);
+        }
+    </style>
 </head>
 <body>
     <header>
         <h1>AR Furniture Store</h1>
         <nav>
-            <a href="index.html">Home</a>
+            <a href="products.html">Products</a>
+            <a href="wishlist.html">Wishlist</a>
             <button id="logout-btn">Logout</button>
         </nav>
     </header>
@@ -19,7 +60,7 @@
         <div class="products-grid" id="products-container"></div>
     </main>
     <footer>
-        <p>&copy; 2023 AR Furniture</p>
+        <p>&copy; 2025 AR Furniture</p>
     </footer>
     <script src="js/auth.js"></script>
     <script src="js/product.js"></script>

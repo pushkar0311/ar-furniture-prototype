@@ -75,9 +75,51 @@
             flex-direction: column;
             gap: 10px;
         }
+        /* Added header styles */
+        header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 10px 20px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        header nav {
+            display: flex;
+            gap: 15px;
+        }
+        header a {
+            color: white;
+            text-decoration: none;
+        }
+        header button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+        }
     </style>
 </head>
 <body>
+    <header>
+        <h1>AR Furniture Viewer</h1>
+        <nav>
+            <a href="products.html">Products</a>
+            <a href="wishlist.html">Wishlist</a>
+            <button id="logout-btn">Logout</button>
+        </nav>
+    </header>
+    
     <div id="loading">Initializing AR...</div>
     <div id="error"></div>
     <button id="back-btn">Back to Products</button>
@@ -125,7 +167,13 @@
                 return;
             }
 
-            // Load the model
+            // Check authentication
+            const token = localStorage.getItem('arFurnitureToken');
+            if (!token) {
+                showErrorAndRedirect('Please login first');
+                return;
+            }
+
             document.getElementById('model').setAttribute('src', modelUrl);
             
             const arModel = document.getElementById('ar-model');
@@ -135,7 +183,6 @@
             arModel.addEventListener('model-loaded', function() {
                 document.getElementById('loading').style.display = 'none';
                 
-                // Adjust scale based on model type
                 const modelName = modelUrl.toLowerCase();
                 if (modelName.includes('bed') || modelName.includes('sofa')) {
                     currentScale = 0.8;
@@ -145,10 +192,8 @@
                 
                 arModel.setAttribute('scale', `${currentScale} ${currentScale} ${currentScale}`);
                 
-                // Auto-start rotation
                 arModel.emit('start-rotation');
                 
-                // Show controls after slight delay
                 setTimeout(() => {
                     document.querySelectorAll('.control-btn, .control-panel, .rotation-controls')
                         .forEach(el => el.style.display = 'flex');
@@ -159,7 +204,7 @@
                 showErrorAndRedirect('Failed to load 3D model');
             });
 
-            // Zoom controls
+            // Control event listeners
             document.getElementById('zoom-in').addEventListener('click', function() {
                 currentScale = Math.min(currentScale + 0.1, 2.0);
                 arModel.setAttribute('scale', `${currentScale} ${currentScale} ${currentScale}`);
@@ -170,7 +215,6 @@
                 arModel.setAttribute('scale', `${currentScale} ${currentScale} ${currentScale}`);
             });
             
-            // Rotation controls
             document.getElementById('rotate-left').addEventListener('click', function() {
                 const rotation = arModel.getAttribute('rotation');
                 arModel.setAttribute('rotation', {y: rotation.y + 45});
@@ -181,7 +225,6 @@
                 arModel.setAttribute('rotation', {y: rotation.y - 45});
             });
             
-            // Toggle auto-rotation
             document.getElementById('toggle-rotation').addEventListener('click', function() {
                 isRotating = !isRotating;
                 if (isRotating) {
@@ -191,6 +234,12 @@
                     arModel.emit('pause-rotation');
                     this.textContent = '▶';
                 }
+            });
+
+            // Logout button
+            document.getElementById('logout-btn').addEventListener('click', function() {
+                localStorage.removeItem('arFurnitureToken');
+                window.location.href = 'login.html';
             });
 
             function showErrorAndRedirect(message) {

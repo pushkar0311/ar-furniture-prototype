@@ -3,29 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - AR Furniture</title>
-    <link rel="stylesheet" href="css/auth.css">
+    <title>AR Furniture - Home</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Consistent header styling */
+        header {
+            position: sticky;
+            top: 0;
+            padding: 15px 20px;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        
+        header nav {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        header a {
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+        
+        header button {
+            background: none;
+            border: 1px solid white;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        header button:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        /* Hero section */
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('images/furniture-bg.jpg');
+            background-size: cover;
+            color: white;
+        }
+        
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 1.1rem;
+            transition: background-color 0.3s;
+        }
+        
+        .cta-button:hover {
+            background-color: #45a049;
+        }
+        
+        /* Features section */
+        .features {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            padding: 50px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .feature-card {
+            flex: 1;
+            min-width: 250px;
+            max-width: 350px;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #4CAF50;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #f5f5f5;
+            margin-top: 50px;
+        }
+    </style>
 </head>
 <body>
-    <div class="auth-container">
-        <h1>Login</h1>
-        <form id="login-form">
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <button type="submit" class="auth-button">Login</button>
-        </form>
-        <p>Don't have an account? <a href="register.html">Register here</a></p>
-        <div id="login-message" class="message"></div>
-    </div>
+    <header>
+        <h1>AR Furniture</h1>
+        <nav>
+            <a href="products.html">Products</a>
+            <a href="wishlist.html">Wishlist</a>
+            <a href="login.html" class="login-link">Login</a>
+            <a href="register.html" class="register-link">Register</a>
+            <button id="logout-btn" class="logout-btn" style="display: none;">Logout</button>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h2>Visualize Furniture in Your Space</h2>
+        <p>Try before you buy with our augmented reality furniture preview. See how our pieces will look in your home before making a purchase.</p>
+        <a href="products.html" class="cta-button">Browse Collection</a>
+    </section>
+
+    <section class="features">
+        <div class="feature-card">
+            <div class="feature-icon">🛋️</div>
+            <h3>AR Preview</h3>
+            <p>View our furniture in your own space using augmented reality technology.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">❤️</div>
+            <h3>Wishlist</h3>
+            <p>Save your favorite items to your personal wishlist for later.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🚚</div>
+            <h3>Fast Delivery</h3>
+            <p>Get your furniture delivered quickly with our efficient shipping network.</p>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 AR Furniture. All rights reserved.</p>
+    </footer>
+
     <script>
-        const API_URL = "http://192.168.116.227:8000";
+        // Update nav based on auth status
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('arFurnitureToken');
+            const loginLinks = document.querySelectorAll('.login-link, .register-link');
+            const logoutBtn = document.getElementById('logout-btn');
+            
+            if (token) {
+                loginLinks.forEach(link => link.style.display = 'none');
+                logoutBtn.style.display = 'block';
+            } else {
+                loginLinks.forEach(link => link.style.display = 'block');
+                logoutBtn.style.display = 'none';
+            }
+            
+            // Logout functionality
+            logoutBtn.addEventListener('click', function() {
+                localStorage.removeItem('arFurnitureToken');
+                window.location.href = 'login.html';
+            });
+        });
     </script>
-    <script src="js/auth.js"></script>
 </body>
 </html>
